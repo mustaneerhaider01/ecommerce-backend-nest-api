@@ -4,11 +4,13 @@ import { User } from './schema/user.schema';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { Cart } from '../cart/schema/cart.schema';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
+    @InjectModel(Cart.name) private readonly cartModel: Model<Cart>,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -22,6 +24,14 @@ export class AuthService {
     const hashedPw = await bcrypt.hash(password, 10);
     const newUser = new this.userModel({ email, password: hashedPw });
     const createdUser = await newUser.save();
+
+    // create cart for the user after sign up
+    const userCart = new this.cartModel({
+      user: createdUser.id,
+      items: [],
+    });
+
+    await userCart.save();
     return createdUser.id as string;
   }
 

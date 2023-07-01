@@ -6,7 +6,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { CartModule } from './cart/cart.module';
-import { StripeModule } from 'nestjs-stripe';
 
 @Module({
   imports: [
@@ -16,13 +15,6 @@ import { StripeModule } from 'nestjs-stripe';
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => ({
         uri: config.get<string>('MONGO_URI'),
-      }),
-    }),
-    StripeModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: async (config: ConfigService) => ({
-        apiKey: config.get<string>('STRIPE_SECRET_KEY'),
-        apiVersion: '2022-11-15',
       }),
     }),
     AuthModule,

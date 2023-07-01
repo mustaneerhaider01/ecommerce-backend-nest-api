@@ -28,3 +28,4 @@ lerna-debug.log*
 *.sublime-workspace
 
 .env
+.vercel

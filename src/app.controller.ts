@@ -13,10 +13,10 @@ export class AppController {
   }
 
   @UseGuards(AuthGuard)
-  @Post('/api/create-checkout-session')
+  @Post('api/create-checkout-session')
   async createCheckoutSession(@Req() req: Request) {
     const userId = req['user'].userId as string;
     const sessionId = await this.appService.createCheckoutSession(userId);
-    return sessionId;
+    return { sessionId };
   }
 }

@@ -1,14 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { InjectStripe } from 'nestjs-stripe';
 import Stripe from 'stripe';
 import { CartService } from './cart/cart.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AppService {
+  private stripeClient: Stripe;
+
   constructor(
-    @InjectStripe() private readonly stripeClient: Stripe,
+    private readonly config: ConfigService,
     private readonly cartService: CartService,
-  ) {}
+  ) {
+    this.stripeClient = new Stripe(config.get('STRIPE_SECRET_KEY'), {
+      apiVersion: '2022-11-15',
+    });
+  }
 
   getHello(): string {
     return 'Hello World!';
@@ -18,7 +24,6 @@ export class AppService {
     const cartItems = await this.cartService.getCart(userId);
 
     const transformCartItems = cartItems.map((item) => ({
-      description: item.product.description,
       quantity: item.quantity,
       price_data: {
         unit_amount: Math.ceil(item.product.price * 100),
@@ -26,6 +31,7 @@ export class AppService {
         product_data: {
           name: item.product.title,
           images: [item.product.image],
+          description: item.product.description,
         },
       },
     }));

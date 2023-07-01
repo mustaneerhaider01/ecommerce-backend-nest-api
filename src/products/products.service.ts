@@ -79,7 +79,7 @@ export class ProductsService {
       price: product.price,
       createdAt: product.createdAt,
       creator: {
-        id: product.creator._id.toString(),
+        id: product.creator?._id.toString(),
       },
     };
   }
